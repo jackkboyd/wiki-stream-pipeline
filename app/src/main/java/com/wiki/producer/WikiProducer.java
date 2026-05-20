@@ -56,6 +56,12 @@ public class WikiProducer {
         };
 
         EventSources.createFactory(client).newEventSource(request, listener);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Shutting down...");
+            producer.flush();
+            producer.close();
+            latch.countDown();
+        }));
         latch.await();
     }
 }
